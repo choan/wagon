@@ -1,57 +1,61 @@
-# I18n
+# Wagon
 
-A JavaScript library to handle multilingual applications.
+The first JavaScript library to handle multilingual applications written on a train.
 
 ## Usage
 
-Use the `I18n` singleton object to set and get translations.
+Invoke the `Wagon` function to get and object able to set and get translations.
+
+    var i18n = Wagon();
 
     // `set` using `source` string and `translation` string
-    I18n.set('Hello', 'Hola');
+    i18n.set('Hello', 'Hola');
     // get translation
-    I18n.t('Hello'); // 'Hola'
+    i18n.t('Hello'); // 'Hola'
     
     // `set` using a hash-like object containing translations
-    I18n.set({
+    i18n.set({
       'Hello': 'Hola',
       'Bye': 'Adiós',
       'Foo': 'Wadus'
     });
-    I18n.t('Hello'); // 'Hola'
-    I18n.t('Bye'); // 'Adiós'
-    I18n.t('Foo'); // 'Wadus'
+    i18n.t('Hello'); // 'Hola'
+    i18n.t('Bye'); // 'Adiós'
+    i18n.t('Foo'); // 'Wadus'
     
     // interpolation of values
-    I18n.set('Hello #{username}', 'Hola, #{username}');
-    I18n.t('Hello #{username}', { username: 'Choan' }); // 'Hola, Choan'
+    i18n.set('Hello #{username}', 'Hola, #{username}');
+    i18n.t('Hello #{username}', { username: 'Choan' }); // 'Hola, Choan'
     
     // pluralization
-    I18n.set({
+    i18n.set({
       comments: {
         0: 'Sin comentarios',
         1: 'Un triste comentario',
         n: '#{n} comentarios'
       }
     });
-    I18n.pl('comments', 0); // 'Sin comentarios'
-    I18n.pl('comments', 1); // 'Un triste comentario'
-    I18n.pl('comments', 9); // '9 comentarios'
+    i18n.pl('comments', 0); // 'Sin comentarios'
+    i18n.pl('comments', 1); // 'Un triste comentario'
+    i18n.pl('comments', 9); // '9 comentarios'
     
     // multiple languages: use an additional argument on `set`
-    I18n
+    i18n
       .set('mirror', 'espejo', 'es')
       .set('mirror', 'mirallo', 'an');
     // set language for getting translations by using... `use`
-    I18n.use('es').t('mirror'); // 'espejo'
-    I18n.use('an').t('mirror'); // 'mirallo'
+    i18n.use('es').t('mirror'); // 'espejo'
+    i18n.use('an').t('mirror'); // 'mirallo'
     
     // namespaces require another additional argument
-    I18n
+    i18n
       .set('please', 'por favor', 'es', 'polite')
       .set('please', '¡pero ya!', 'es', 'rude');
-    I18n.use('es', 'polite').t('please'); // 'por favor'
-    I18n.use('es', 'rude').t('please'); // '¡pero ya!'
+    i18n.use('es', 'polite').t('please'); // 'por favor'
+    i18n.use('es', 'rude').t('please'); // '¡pero ya!'
+
+
 
 ## Author, license, source code
 
-I18n has been createde by [Choan Gálvez](http://choangalvez.nom.es) and is distributed under a MIT-style license. You can find the library source code at <http://github.com/choan/js_i18n/>.
+**Wagon** has been createde by [Choan Gálvez](http://choangalvez.nom.es) and is distributed under a MIT-style license. You can find the library source code at <http://github.com/choan/wagon/>.

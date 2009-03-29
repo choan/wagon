@@ -6,7 +6,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="../assets/jsunittest.js" type="text/javascript"></script>
   <script src="../assets/sugar_test.js" type="text/javascript"></script>
-  <script src="../../src/js_i18n.js" type="text/javascript"></script>
+  <script src="../../src/wagon.js" type="text/javascript"></script>
   
   <link rel="stylesheet" href="../assets/unittest.css" type="text/css" />
 </head>
@@ -17,7 +17,7 @@
   <div id="header">
     <h1>JavaScript unit test file</h1>
     <p>
-      This file tests <strong>js_i18n.js</strong>.
+      This file tests <strong>wagon.js</strong>.
     </p>
   </div>
 
@@ -31,7 +31,7 @@
 <script type="text/javascript">
 // <![CDATA[
 var i18n, t;
-SugarTest('I18n')
+SugarTest('Wagon')
   .before(function() {
     i18n = Wagon();
     t = i18n.t;
@@ -82,7 +82,7 @@ SugarTest('I18n')
     this.assertEqual('Un poco, pero solo uno', i18n.pl('hey', 1));
     this.assertEqual('3 estropercios', i18n.pl('hey', 3));
   })
-  .it('Can load multiple translations on one call', function(data) {
+  .it('can load multiple translations on one call', function(data) {
     i18n.set({
       'hello': 'hola',
       'bye': 'abur'
@@ -90,7 +90,7 @@ SugarTest('I18n')
     this.assertEqual('hola', t('hello'));
     this.assertEqual('abur', t('bye'));
   })
-  .it('Search translations in nested objects', function(data) {
+  .it('search translations in nested objects', function(data) {
     i18n.set('post', {
       'add' : 'Añadir post',
       'delete' : 'Borrar post #id'

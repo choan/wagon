@@ -1,6 +1,6 @@
 var Wagon = function() {
   /**
-   * The I18n object
+   * The object that will be returned
    */
   var I,
   /**
