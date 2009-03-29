@@ -30,84 +30,101 @@
 
 <script type="text/javascript">
 // <![CDATA[
+var i18n, t;
 SugarTest('I18n')
-  .before(function(data) {
-    I18n.reset();
+  .before(function() {
+    i18n = I18n();
+    t = i18n.t;
   })
   .it('allows setting and retrieving translations', function(data) {
-    I18n.use('es').set('source', 'fuente');
-    this.assertEqual('fuente', I18n.t('source'));    
+    i18n.use('es').set('source', 'fuente');
+    this.assertEqual('fuente', t('source'));    
   })
   .it('allows setting and retrieving translations to different languages', function(data) {
-    I18n
+    i18n
       .use('es')
       .set('source', 'fuente')
       .use('kn')
       .set('source', 'jrrkkk');
-    this.assertEqual('fuente', I18n.use('es').t('source'));
-    this.assertEqual('jrrkkk', I18n.use('kn').t('source'));
+    this.assertEqual('fuente', i18n.use('es').t('source'));
+    this.assertEqual('jrrkkk', i18n.use('kn').t('source'));
   })
   .it('allows usage of different namespaces', function(data) {
-    I18n
+    i18n
       .use('es')
       .set('please', 'Por favor')
       .use('es', 'rude')
       .set('please', 'Pero ya!');
     
-    this.assertEqual('Por favor', I18n.use('es', 'default').t('please'));
-    this.assertEqual('Pero ya!', I18n.use('es', 'rude').t('please'));
+    this.assertEqual('Por favor', i18n.use('es', 'default').t('please'));
+    this.assertEqual('Pero ya!', i18n.use('es', 'rude').t('please'));
   })
   .it('interpolates data', function(data) {
-    I18n
+    i18n
       .use('es')
       .set('placeholders', 'Ponme !casa en el @campo');
-    this.assertEqual('Ponme un hogar en el campo', I18n.t('placeholders', { casa: 'un hogar', campo: 'campo' }), 'Should be equal');
-    this.assertEqual('tralari tralara hey hey', I18n.t('@x @y hey hey', {x: 'tralari', y: 'tralara'}));
-    this.assertEqual('tralari tralara', I18n.t('@{x} @y', {x: 'tralari', y: 'tralara'}));
-    this.assertEqual('@{x tralara', I18n.t('@{x @y', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('Ponme un hogar en el campo', t('placeholders', { casa: 'un hogar', campo: 'campo' }), 'Should be equal');
+    this.assertEqual('tralari tralara hey hey', t('@x @y hey hey', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('tralari tralara', t('@{x} @y', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('@{x tralara', t('@{x @y', {x: 'tralari', y: 'tralara'}));
   })
   .it('uses the raw placeholder when the key is not found in the object', function(data) {
     // debugger;
-    this.assertEqual('tralari !ph choan @asco, hey', I18n.t('tralari !ph #{nombre} @asco, hey', { nombre: 'choan' }));
+    this.assertEqual('tralari !ph choan @asco, hey', t('tralari !ph #{nombre} @asco, hey', { nombre: 'choan' }));
   })
   .it('handles plurals', function(data) {
-    I18n.set('hey', {
+    i18n.set('hey', {
         0: 'Nada de nada',
         1: 'Un poco, pero solo uno',
         n: '!n estropercios'
     });
-    this.assertEqual('Nada de nada', I18n.pl('hey', 0));
-    this.assertEqual('Un poco, pero solo uno', I18n.pl('hey', 1));
-    this.assertEqual('3 estropercios', I18n.pl('hey', 3));
+    this.assertEqual('Nada de nada', i18n.pl('hey', 0));
+    this.assertEqual('Un poco, pero solo uno', i18n.pl('hey', 1));
+    this.assertEqual('3 estropercios', i18n.pl('hey', 3));
   })
   .it('Can load multiple translations on one call', function(data) {
-    I18n.set({
+    i18n.set({
       'hello': 'hola',
       'bye': 'abur'
     });
-    this.assertEqual('hola', I18n.t('hello'));
-    this.assertEqual('abur', I18n.t('bye'));
+    this.assertEqual('hola', t('hello'));
+    this.assertEqual('abur', t('bye'));
   })
   .it('Search translations in nested objects', function(data) {
-    I18n.set('post', {
+    i18n.set('post', {
       'add' : 'Añadir post',
       'delete' : 'Borrar post #id'
     })
-    this.assertEqual('Añadir post', I18n.t('post.add'));
-    this.assertEqual('Borrar post 16', I18n.t('post.delete', { id: 16 }));
+    this.assertEqual('Añadir post', t('post.add'));
+    this.assertEqual('Borrar post 16', t('post.delete', { id: 16 }));
   })
   .it('doesn\'t get confused on sources which contain dots', function(data) {
-    I18n.set('One.', 'Uno.');
-    this.assertEqual('Uno.', I18n.t('One.'));
+    i18n.set('One.', 'Uno.');
+    this.assertEqual('Uno.', t('One.'));
   })
   .it('finds keys including dots before checking nested objects', function(data) {
-    I18n
+    i18n
       .set('form.error', 'Error en el formulario')
       .set({ 'form' : { 'send' : 'Enviar', 'nest' : { 'deep' : 'Profundidad' }, 'du.dua' : 'hey hey' }});
-    this.assertEqual('Error en el formulario', I18n.t('form.error'));
-    this.assertEqual('Enviar', I18n.t('form.send'));
-    this.assertEqual('Profundidad', I18n.t('form.nest.deep'));
-    this.assertEqual('hey hey', I18n.t('form.du.dua'), 'Should be equal');
+    this.assertEqual('Error en el formulario', t('form.error'));
+    this.assertEqual('Enviar', t('form.send'));
+    this.assertEqual('Profundidad', t('form.nest.deep'));
+    this.assertEqual('hey hey', t('form.du.dua'));
+  })
+  .it('loads translations from one single argument', function(data) {
+    i18n
+      .set({
+        meta: {
+          lang: 'es',
+          namespace: 'rude'
+        },
+        translations: {
+          hey: 'eh',
+          foo: 'wadus'
+        }
+      });
+    i18n.use('es', 'rude');
+    this.assertEqual('eh', t('hey'));
   })
 .run();
 

@@ -45,6 +45,11 @@ var I18n = function() {
    * Add multiple translations to the translation storage
    */
   setTranslations = function(o, lang, ns) {
+    if ('meta' in o && 'translations' in o) {
+      lang = o.meta.lang;
+      ns = o.meta.namespace;
+      o = o.translations;
+    }
     for (var i in o)
       if (o.hasOwnProperty(i))
         setTranslation(i, o[i], lang, ns);
@@ -156,7 +161,6 @@ var I18n = function() {
 
   // return object with privileged methods
   return I = {
-    reset: initialize,
     set: function(source, translation, lang, ns) {
       if (typeof source === 'object')
         return setTranslations(source, translation, ns);
@@ -172,4 +176,4 @@ var I18n = function() {
     version: '<%= APP_VERSION %>'
   };
   
-}();
+};
