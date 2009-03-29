@@ -72,7 +72,6 @@ var I18n = function() {
         part = path.shift();
         if (source in o) { // unnested objects with dotted keys
           o = o[source];
-          break;
         }
         else if (part in o) { // nested objects
           o = o[part];
@@ -80,6 +79,7 @@ var I18n = function() {
         else {
           return null;
         }
+        if (typeof o == 'string') break;
       }
       return o;
     }
