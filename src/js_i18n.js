@@ -68,8 +68,13 @@ var I18n = function() {
         path = [source];
 
       while (path.length) {
+        source = path.join('.');
         part = path.shift();
-        if (part in o) {
+        if (source in o) { // unnested objects with dotted keys
+          o = o[source];
+          break;
+        }
+        else if (part in o) { // nested objects
           o = o[part];
         }
         else {

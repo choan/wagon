@@ -100,6 +100,15 @@ SugarTest('I18n')
     I18n.set('One.', 'Uno.');
     this.assertEqual('Uno.', I18n.t('One.'));
   })
+  .it('finds keys including dots before checking nested objects', function(data) {
+    I18n
+      .set('form.error', 'Error en el formulario')
+      .set({ 'form' : { 'send' : 'Enviar', 'nest' : { 'deep' : 'Profundidad' }, 'du.dua' : 'hey hey' }});
+    this.assertEqual('Error en el formulario', I18n.t('form.error'));
+    this.assertEqual('Enviar', I18n.t('form.send'));
+    this.assertEqual('Profundidad', I18n.t('form.nest.deep'));
+    this.assertEqual('hey hey', I18n.t('form.du.dua'), 'Should be equal');
+  })
 .run();
 
 
