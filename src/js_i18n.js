@@ -1,4 +1,4 @@
-var I18n = function() {
+var Wagon = function() {
   /**
    * The I18n object
    */
@@ -21,7 +21,7 @@ var I18n = function() {
   re = /([#!@])(\{?)([a-z0-9_]+)/ig,
 
   /**
-   * Initializes (and resets) data fields
+   * Initializes data fields
    */
   initialize = function() {
     strings = {};
@@ -42,7 +42,7 @@ var I18n = function() {
   },
 
   /**
-   * Add multiple translations to the translation storage
+   * Adds multiple translations to the translation storage
    */
   setTranslations = function(o, lang, ns) {
     if ('meta' in o && 'translations' in o) {
@@ -57,7 +57,7 @@ var I18n = function() {
   },
 
   /**
-   * Retrieves a translations from the translation storage
+   * Retrieves a translation from the translation storage
    */
   getTranslation = function(source, lang, ns) {
     var o, path, i, part;

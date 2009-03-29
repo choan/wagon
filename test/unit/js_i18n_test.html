@@ -33,7 +33,7 @@
 var i18n, t;
 SugarTest('I18n')
   .before(function() {
-    i18n = I18n();
+    i18n = Wagon();
     t = i18n.t;
   })
   .it('allows setting and retrieving translations', function(data) {
