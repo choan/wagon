@@ -1,6 +1,6 @@
 # Wagon
 
-The first JavaScript library to handle multilingual applications written on a train.
+Handles internationalization in your JavaScript applications.
 
 ## Usage
 
@@ -54,7 +54,7 @@ Invoke the `Wagon` function to get and object able to set and get translations.
     i18n.use('es', 'polite').t('please'); // 'por favor'
     i18n.use('es', 'rude').t('please'); // '¡pero ya!'
 
-
+More documentation coming soon.
 
 ## Author, license, source code
 
