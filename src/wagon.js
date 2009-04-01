@@ -2,7 +2,7 @@ var Wagon = function() {
   /**
    * The object that will be returned
    */
-  var I,
+  var wagon,
   /**
    * Translations store
    */
@@ -16,19 +16,33 @@ var Wagon = function() {
    */
   currentNs,
   /**
+   * List of prefixes
+   */  
+  prefixes = '#!@%',
+  /**
    * Regexp to handle interpolation
    */
-  re = /([#!@])(\{)([a-z0-9_]+)/ig,
-
+  re = /([#!@%])\{([a-z0-9_]+)\}/ig,
+  /**
+   * A hash containing handlers for each prefix
+   */  
+  handlers = {},
+  /**
+   * Is the object frozen?
+   */  
+  isFrozen = false,
   /**
    * Initializes data fields
    */
   initialize = function() {
+    var i;
     strings = {};
     currentLang = '';
     currentNs = 'default';
+    for (i = 0; i < prefixes.length; i += 1) {
+      handlers[prefixes.charAt(i)] = I;
+    }
   },
-
   /**
    * Adds a translation to the translations storage
    */
@@ -38,9 +52,8 @@ var Wagon = function() {
     if (!(lang in strings)) strings[lang] = {};
     if (!(ns in strings[lang])) strings[lang][ns] = {};
     strings[lang][ns][source] = translation;
-    return I;
+    return wagon;
   },
-
   /**
    * Adds multiple translations to the translation storage
    */
@@ -53,9 +66,8 @@ var Wagon = function() {
     for (var i in o)
       if (o.hasOwnProperty(i))
         setTranslation(i, o[i], lang, ns);
-    return I;
+    return wagon;
   },
-
   /**
    * Retrieves a translation from the translation storage
    */
@@ -65,7 +77,6 @@ var Wagon = function() {
     ns = ns || currentNs;
     if (lang in strings && ns in strings[lang]) {
       o = strings[lang][ns];
-
       // handle nested objects
       if (/^[a-z0-9_]+(\.[a-z0-9_]+)+$/.test(source))
         path = source.split('.');
@@ -90,7 +101,6 @@ var Wagon = function() {
     }
     return null;
   },
-
   /**
    * Translates a string interpolating data from a hash-like argument
    */
@@ -99,16 +109,14 @@ var Wagon = function() {
     if (o) translation = interpolate(translation, o);
     return translation;
   },
-
   /**
    * Sets language and namespace to use both in setting and retrieving translations
    */
   use = function(lang, ns) {
     currentLang = lang;
     if (ns !== undefined) currentNs = ns;
-    return I;
+    return wagon;
   },
-
   /**
    * Selects translations based on a numeric argument, then interpolates data
    */
@@ -119,48 +127,51 @@ var Wagon = function() {
       translation = translation[n];
     }
     else {
-      translation = translation['n']
+      translation = translation['n'];
     }
     o['n'] = n;
     return interpolate(translation, o);
   },
-
   /**
    * Interpolates data on a template string
    */
   interpolate = function(template, data) {
-    var m, s = template, r = '', search, part;
-    for (;;) {
-      m = re.exec(s);
-      if (!m) {
-        break;
-      }
-      else {
-        search = m[0];
-        if (m[2]) {
-          if (s.charAt(re.lastIndex) == '}') {
-            re.lastIndex += 1;
-            search += '}';
-          }
-          else
-            search = false;
-        }
-        part = s.substring(0, re.lastIndex);
-        if (search && m[3] in data) part = part.replace(search, data[m[3]]);
-        r += part;
-        s = s.substring(re.lastIndex);
-      }
+    var m, s = template, r = '', search, part, prefix, name;
+    while (s && (m = re.exec(s))) {
+      search = m[0];
+      prefix = m[1];
+      name = m[2];
+      part = s.substring(0, re.lastIndex);
+      if (search && m[2] in data) part = part.replace(search, handlers[prefix](data[m[2]]));
+      r += part;
+      s = s.substring(re.lastIndex);
       re.lastIndex = 0;
     }
     r += s;
     return r;
+  },
+  /**
+   * Sets a placeholder callback for the given prefix
+   */ 
+  handlePlaceholder = function(handler, prefix) {
+    if (!isFrozen) handlers[prefix] = handler;
+  },
+  /**
+   * Returns the given argument (used as default placeholder callback)
+   */   
+  I = function(value) {
+    return value;
+  },
+  freeze = function() {
+    isFrozen = true;
+    return wagon;
   };
 
   // set up
   initialize();
 
   // return object with privileged methods
-  return I = {
+  return wagon = {
     set: function(source, translation, lang, ns) {
       if (typeof source === 'object')
         return setTranslations(source, translation, ns);
@@ -173,7 +184,8 @@ var Wagon = function() {
     pl: pluralize,
     pluralize: pluralize,
     use: use,
+    handlePlaceholder: handlePlaceholder,
+    freeze : freeze,
     version: '<%= APP_VERSION %>'
   };
-  
 };

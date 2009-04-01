@@ -126,6 +126,23 @@ SugarTest('Wagon')
     i18n.use('es', 'rude');
     this.assertEqual('eh', t('hey'));
   })
+  .it('accepts custom handlers for interpolation', function(data) {
+    i18n
+      .set('algo', 'alguna #{cosa} u otra !{cosa}')
+      .handlePlaceholder(function(value) {
+        return ('' + value).replace(/a/g, 'e'); 
+      }, '!');
+    this.assertEqual('alguna casa u otra cese', t('algo', { cosa: 'casa' }));
+  })
+  .it('does not accept handlers after freezing', function(data) {
+    i18n
+      .set('algo', 'alguna #{cosa} u otra !{cosa}')
+      .freeze()
+      .handlePlaceholder(function(value) {
+        return ('' + value).replace(/a/g, 'e'); 
+      }, '!');
+    this.assertEqual('alguna casa u otra casa', t('algo', { cosa: 'casa' }));
+  })
 .run();
 
 
