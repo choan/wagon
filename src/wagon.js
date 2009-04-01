@@ -18,7 +18,7 @@ var Wagon = function() {
   /**
    * Regexp to handle interpolation
    */
-  re = /([#!@])(\{?)([a-z0-9_]+)/ig,
+  re = /([#!@])(\{)([a-z0-9_]+)/ig,
 
   /**
    * Initializes data fields

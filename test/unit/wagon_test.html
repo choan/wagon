@@ -62,11 +62,11 @@ SugarTest('Wagon')
   .it('interpolates data', function(data) {
     i18n
       .use('es')
-      .set('placeholders', 'Ponme !casa en el @campo');
+      .set('placeholders', 'Ponme !{casa} en el @{campo}');
     this.assertEqual('Ponme un hogar en el campo', t('placeholders', { casa: 'un hogar', campo: 'campo' }), 'Should be equal');
-    this.assertEqual('tralari tralara hey hey', t('@x @y hey hey', {x: 'tralari', y: 'tralara'}));
-    this.assertEqual('tralari tralara', t('@{x} @y', {x: 'tralari', y: 'tralara'}));
-    this.assertEqual('@{x tralara', t('@{x @y', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('tralari tralara hey hey', t('@{x} @{y} hey hey', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('tralari tralara', t('@{x} @{y}', {x: 'tralari', y: 'tralara'}));
+    this.assertEqual('@{x tralara', t('@{x @{y}', {x: 'tralari', y: 'tralara'}));
   })
   .it('uses the raw placeholder when the key is not found in the object', function(data) {
     // debugger;
@@ -76,7 +76,7 @@ SugarTest('Wagon')
     i18n.set('hey', {
         0: 'Nada de nada',
         1: 'Un poco, pero solo uno',
-        n: '!n estropercios'
+        n: '!{n} estropercios'
     });
     this.assertEqual('Nada de nada', i18n.pl('hey', 0));
     this.assertEqual('Un poco, pero solo uno', i18n.pl('hey', 1));
@@ -93,7 +93,7 @@ SugarTest('Wagon')
   .it('search translations in nested objects', function(data) {
     i18n.set('post', {
       'add' : 'Añadir post',
-      'delete' : 'Borrar post #id'
+      'delete' : 'Borrar post #{id}'
     })
     this.assertEqual('Añadir post', t('post.add'));
     this.assertEqual('Borrar post 16', t('post.delete', { id: 16 }));
