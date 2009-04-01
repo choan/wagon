@@ -22,7 +22,7 @@ var Wagon = function() {
   /**
    * Regexp to handle interpolation
    */
-  re = /([#!@%])\{([a-z0-9_]+)\}/ig,
+  re = new RegExp('([' + prefixes + '])\{([a-z0-9_]+)\}', 'ig'),
   /**
    * A hash containing handlers for each prefix
    */  
@@ -40,7 +40,7 @@ var Wagon = function() {
     currentLang = '';
     currentNs = 'default';
     for (i = 0; i < prefixes.length; i += 1) {
-      handlers[prefixes.charAt(i)] = I;
+      handlers[prefixes.charAt(i)] = defaultHandler;
     }
   },
   /**
@@ -104,8 +104,9 @@ var Wagon = function() {
   /**
    * Translates a string interpolating data from a hash-like argument
    */
-  translate = function(source, o) {
+  translate = function(source, o, acceptHtml) {
     var translation = getTranslation(source) || source;
+    if (!acceptHtml) translation = escapeHtml(translation);
     if (o) translation = interpolate(translation, o);
     return translation;
   },
@@ -120,7 +121,7 @@ var Wagon = function() {
   /**
    * Selects translations based on a numeric argument, then interpolates data
    */
-  pluralize = function(source, n, o) {
+  pluralize = function(source, n, o, acceptHtml) {
     var translation = getTranslation(source);
     o = o || {};
     if (n in translation) {
@@ -130,6 +131,7 @@ var Wagon = function() {
       translation = translation['n'];
     }
     o['n'] = n;
+    if (!acceptHtml) translation = escapeHtml(translation);
     return interpolate(translation, o);
   },
   /**
@@ -142,7 +144,7 @@ var Wagon = function() {
       prefix = m[1];
       name = m[2];
       part = s.substring(0, re.lastIndex);
-      if (search && m[2] in data) part = part.replace(search, handlers[prefix](data[m[2]]));
+      if (search && m[2] in data) part = part.replace(search, handlers[prefix](data[name]));
       r += part;
       s = s.substring(re.lastIndex);
       re.lastIndex = 0;
@@ -160,12 +162,15 @@ var Wagon = function() {
   /**
    * Returns the given argument (used as default placeholder callback)
    */   
-  I = function(value) {
+  defaultHandler = function(value) {
     return value;
   },
   freeze = function() {
     isFrozen = true;
     return wagon;
+  },
+  escapeHtml = function(s) {
+    return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   };
 
   // set up

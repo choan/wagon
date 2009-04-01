@@ -1,4 +1,5 @@
-/*  Wagon, version <%= APP_VERSION %>
+/*!
+ *  Wagon, version <%= APP_VERSION %>
  *  (c) 2009 Choan Gálvez
  *
  *  Wagon is freely distributable under 
