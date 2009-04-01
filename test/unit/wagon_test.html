@@ -128,11 +128,14 @@ SugarTest('Wagon')
   })
   .it('accepts custom handlers for interpolation', function(data) {
     i18n
-      .set('algo', 'alguna #{cosa} u otra !{cosa}')
+      .set('algo', 'alguna #{cosa} u otra !{cosa}, y @{cosa} enfatizada')
       .handlePlaceholder(function(value) {
         return ('' + value).replace(/a/g, 'e'); 
-      }, '!');
-    this.assertEqual('alguna casa u otra cese', t('algo', { cosa: 'casa' }));
+      }, '!')
+      .handlePlaceholder(function(value) {
+        return '<em>' + value + '</em>';
+      }, '@');
+    this.assertEqual('alguna casa u otra cese, y <em>casa</em> enfatizada', t('algo', { cosa: 'casa' }));
   })
   .it('does not accept handlers after freezing', function(data) {
     i18n

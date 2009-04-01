@@ -155,6 +155,7 @@ var Wagon = function() {
    */ 
   handlePlaceholder = function(handler, prefix) {
     if (!isFrozen) handlers[prefix] = handler;
+    return wagon;
   },
   /**
    * Returns the given argument (used as default placeholder callback)
