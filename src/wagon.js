@@ -116,7 +116,7 @@ var Wagon = function() {
   /**
    * Selects translations based on a numeric argument, then interpolates data
    */
-  pluralize = function(source, n, o, acceptHtml, transform) {
+  plural = function(source, n, o, acceptHtml, transform) {
     var translation = getTranslation(source);
     transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
     acceptHtml = arguments.length >= 4 && typeof acceptHtml == 'boolean' && acceptHtml;
@@ -183,8 +183,8 @@ var Wagon = function() {
     get: getTranslation,
     translate : translate,
     t: translate,
-    pl: pluralize,
-    pluralize: pluralize,
+    pl: plural,
+    plural: plural,
     use: use,
     handlePlaceholder: handlePlaceholder,
     version: '<%= APP_VERSION %>'
