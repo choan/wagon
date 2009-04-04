@@ -28,10 +28,6 @@ var Wagon = function() {
    */  
   handlers = {},
   /**
-   * Is the object frozen?
-   */  
-  isFrozen = false,
-  /**
    * Initializes data fields
    */
   initialize = function() {
@@ -166,7 +162,7 @@ var Wagon = function() {
    * Sets a placeholder callback for the given prefix
    */ 
   handlePlaceholder = function(handler, prefix) {
-    if (!isFrozen) handlers[prefix] = handler;
+    handlers[prefix] = handler;
     return wagon;
   },
   escapeHtml = function(s) {
