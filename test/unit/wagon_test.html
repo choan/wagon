@@ -31,11 +31,12 @@
 
 <script type="text/javascript">
 // <![CDATA[
-var i18n, t;
+var i18n, t, pl;
 SugarTest('Wagon')
   .before(function() {
     i18n = Wagon();
     t = i18n.t;
+    pl = i18n.pl;
   })
   .it('allows setting and retrieving translations', function(data) {
     i18n.use('es').set('source', 'fuente');
@@ -82,6 +83,9 @@ SugarTest('Wagon')
     this.assertEqual('Nada de nada', i18n.pl('hey', 0));
     this.assertEqual('Un poco, pero solo uno', i18n.pl('hey', 1));
     this.assertEqual('3 estropercios', i18n.pl('hey', 3));
+  })
+  .it('handles untranslated plurals', function(data) {
+    this.assertEqual('Untranslated 3 plural', pl('Untranslated #{n} plural', 3));
   })
   .it('can load multiple translations on one call', function(data) {
     i18n.set({
@@ -152,6 +156,20 @@ SugarTest('Wagon')
   })
   .it('escapes the translated string before interpolation unless telled otherwise', function(data) {
     this.assertEqual('algun <script>', t('algun <script>', null, true));
+  })
+  .it('accepts a function to transform the value', function(data) {
+    var res = t('#{someone} is #{something}', { someone: 'choan', something: 'fool'}, false, function(k, v) {
+      if (k == 'something') return 'awesome';
+      return v;
+    });
+    this.assertEqual('choan is awesome', res);
+  })
+  .it('accepts a function to transform the value omitting the acceptHtml argument', function(data) {
+    var res = t('#{someone} is #{something}', { someone: 'choan', something: 'fool'},  function(k, v) {
+      if (k == 'something') return 'awesome';
+      return v;
+    });
+    this.assertEqual('choan is awesome', res);
   })
 .run();
 // ]]>

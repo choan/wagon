@@ -104,10 +104,12 @@ var Wagon = function() {
   /**
    * Translates a string interpolating data from a hash-like argument
    */
-  translate = function(source, o, acceptHtml) {
+  translate = function(source, o, acceptHtml, transform) {
     var translation = getTranslation(source) || source;
+    transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
+    acceptHtml = arguments.length >= 3 && typeof acceptHtml == 'boolean' && acceptHtml;
     if (!acceptHtml) translation = escapeHtml(translation);
-    if (o) translation = interpolate(translation, o);
+    if (o) translation = interpolate(translation, o, transform);
     return translation;
   },
   /**
@@ -121,30 +123,41 @@ var Wagon = function() {
   /**
    * Selects translations based on a numeric argument, then interpolates data
    */
-  pluralize = function(source, n, o, acceptHtml) {
+  pluralize = function(source, n, o, acceptHtml, transform) {
     var translation = getTranslation(source);
+    transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
+    acceptHtml = arguments.length >= 4 && typeof acceptHtml == 'boolean' && acceptHtml;
     o = o || {};
-    if (n in translation) {
-      translation = translation[n];
-    }
-    else {
-      translation = translation['n'];
-    }
     o['n'] = n;
+    if (translation && typeof translation == 'object') {
+      if (n in translation) {
+        translation = translation[n];
+      }
+      else {
+        translation = translation['n'];
+      }
+    }
+    else if (translation === null) translation = source;
     if (!acceptHtml) translation = escapeHtml(translation);
-    return interpolate(translation, o);
+    return interpolate(translation, o, transform);
   },
   /**
    * Interpolates data on a template string
    */
-  interpolate = function(template, data) {
-    var m, s = template, r = '', search, part, prefix, name;
+  interpolate = function(template, data, transform) {
+    var m, s = template, r = '', search, part, prefix, name, value, found;
     while (s && (m = re.exec(s))) {
       search = m[0];
       prefix = m[1];
       name = m[2];
+      if (name in data) {
+        found = true;
+        value = data[name];
+        value = handlers[prefix](value);
+        if (transform) value = transform(name, value);
+      }
       part = s.substring(0, re.lastIndex);
-      if (search && m[2] in data) part = part.replace(search, handlers[prefix](data[name]));
+      if (found) part = part.replace(search, value);
       r += part;
       s = s.substring(re.lastIndex);
       re.lastIndex = 0;
