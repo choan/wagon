@@ -161,7 +161,7 @@ var Wagon = function() {
   /**
    * Sets a placeholder callback for the given prefix
    */ 
-  handlePlaceholder = function(handler, prefix) {
+  handlePlaceholder = function(prefix, handler) {
     handlers[prefix] = handler;
     return wagon;
   },

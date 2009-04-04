@@ -134,12 +134,12 @@ SugarTest('Wagon')
   .it('accepts custom handlers for interpolation', function(data) {
     i18n
       .set('algo', 'alguna #{cosa} u otra !{cosa}, y @{cosa} enfatizada')
-      .handlePlaceholder(function(value) {
+      .handlePlaceholder('!', function(value) {
         return ('' + value).replace(/a/g, 'e'); 
-      }, '!')
-      .handlePlaceholder(function(value) {
+      })
+      .handlePlaceholder('@', function(value) {
         return '<em>' + value + '</em>';
-      }, '@');
+      });
     this.assertEqual('alguna casa u otra cese, y <em>casa</em> enfatizada', t('algo', { cosa: 'casa' }));
   })
   .it('escapes the translated string before interpolation', function(data) {
