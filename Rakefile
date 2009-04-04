@@ -11,11 +11,12 @@ require 'rake/clean'
 require 'rake/packagetask'
 
 $:.unshift File.dirname(__FILE__) + "/lib"
+require "rake/file_concat"
+
 
 APP_VERSION  = '0.0.1'
 APP_NAME     = 'wagon'
 RUBYFORGE_PROJECT = APP_NAME
-APP_TEMPLATE = "#{APP_NAME}.js.erb"
 APP_FILE_NAME= "#{APP_NAME}.js"
 
 APP_ROOT     = File.expand_path(File.dirname(__FILE__))
@@ -23,23 +24,22 @@ APP_SRC_DIR  = File.join(APP_ROOT, 'src')
 APP_DIST_DIR = File.join(APP_ROOT, 'dist')
 APP_PKG_DIR  = File.join(APP_ROOT, 'pkg')
 
+APP_DIST_FILE_NAME = File.join(APP_DIST_DIR, APP_FILE_NAME)
+
+CLEAN.include(APP_DIST_DIR)
 
 unless ENV['rakefile_just_config']
 
 task :default => [:dist, :package, :clean_package_source]
 
-desc "Builds the distribution"
-task :dist do
-  $:.unshift File.join(APP_ROOT, 'lib')
-  require 'protodoc'
-  require 'fileutils'
-  FileUtils.mkdir_p APP_DIST_DIR
 
-  Dir.chdir(APP_SRC_DIR) do
-    File.open(File.join(APP_DIST_DIR, APP_FILE_NAME), 'w+') do |dist|
-      dist << Protodoc::Preprocessor.new(APP_TEMPLATE)
-    end
-  end
+directory APP_DIST_DIR
+
+files = %W[HEADER #{APP_FILE_NAME}].map { |f| File.join(APP_SRC_DIR, f) }
+file_concat(APP_DIST_FILE_NAME => [ APP_DIST_DIR ]).add(*files)
+
+desc "Builds the distribution"
+task :dist => APP_DIST_FILE_NAME do  
   Dir.chdir(APP_DIST_DIR) do
     FileUtils.copy_file APP_FILE_NAME, "#{APP_NAME}-#{APP_VERSION}.js"
   end
@@ -116,6 +116,7 @@ end
 task :clean_package_source do
   rm_rf File.join(APP_PKG_DIR, "#{APP_NAME}-#{APP_VERSION}")
 end
+
 
 Dir['tasks/**/*.rake'].each { |rake| load rake }
 
