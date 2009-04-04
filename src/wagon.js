@@ -39,9 +39,6 @@ var Wagon = function() {
     strings = {};
     currentLang = '';
     currentNs = 'default';
-    for (i = 0; i < prefixes.length; i += 1) {
-      handlers[prefixes.charAt(i)] = defaultHandler;
-    }
   },
   /**
    * Adds a translation to the translations storage
@@ -153,7 +150,7 @@ var Wagon = function() {
       if (name in data) {
         found = true;
         value = data[name];
-        value = handlers[prefix](value);
+        if (prefix in handlers) value = handlers[prefix](value);
         if (transform) value = transform(name, value);
       }
       part = s.substring(0, re.lastIndex);
@@ -170,16 +167,6 @@ var Wagon = function() {
    */ 
   handlePlaceholder = function(handler, prefix) {
     if (!isFrozen) handlers[prefix] = handler;
-    return wagon;
-  },
-  /**
-   * Returns the given argument (used as default placeholder callback)
-   */   
-  defaultHandler = function(value) {
-    return value;
-  },
-  freeze = function() {
-    isFrozen = true;
     return wagon;
   },
   escapeHtml = function(s) {
@@ -204,7 +191,6 @@ var Wagon = function() {
     pluralize: pluralize,
     use: use,
     handlePlaceholder: handlePlaceholder,
-    freeze : freeze,
     version: '<%= APP_VERSION %>'
   };
 };

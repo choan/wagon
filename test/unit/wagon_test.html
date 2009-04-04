@@ -142,15 +142,6 @@ SugarTest('Wagon')
       }, '@');
     this.assertEqual('alguna casa u otra cese, y <em>casa</em> enfatizada', t('algo', { cosa: 'casa' }));
   })
-  .it('does not accept handlers after freezing', function(data) {
-    i18n
-      .set('algo', 'alguna #{cosa} u otra !{cosa}')
-      .freeze()
-      .handlePlaceholder(function(value) {
-        return ('' + value).replace(/a/g, 'e'); 
-      }, '!');
-    this.assertEqual('alguna casa u otra casa', t('algo', { cosa: 'casa' }));
-  })
   .it('escapes the translated string before interpolation', function(data) {
     this.assertEqual('algun &lt;script&gt;', t('algun <script>'));
   })
