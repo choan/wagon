@@ -193,10 +193,11 @@ var Wagon = function() {
    * Formats a number according to the current language
    * @private
    */  
-  numberFormat = function(num) {
+  numberFormat = function(num, decs) {
     var dSym, mSym, r, s, parts, re, i;
     dSym = getTranslation('$number.decimal') || '.';
     mSym = getTranslation('$number.milliard') || ',';
+    if (decs !== undefined) num = num.toFixed(decs);
     parts = ('' + num).split('.');
     if (mSym) {
       r = '';
@@ -297,7 +298,8 @@ var Wagon = function() {
     /**
      * Formats a number according to the current locale
      * @function
-     * @param {Number}
+     * @param {Number} number The number to be formatted
+     * @param {Number} decimals Decimal places to be used
      * @returns {String} The formatted number
      */   
     numberFormat: numberFormat,

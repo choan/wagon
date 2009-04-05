@@ -205,7 +205,10 @@ SugarTest('Wagon')
     }, 'kn');
     i18n.use('kn');
     this.assertEqual('456_789d2', num(456789.2));
-
+  })
+  .it('limits the number of decimal points', function(data) {
+    this.assertEqual('1,000.24', num(1000.237887, 2));
+    this.assertEqual('-900.20', num(-900.2, 2));
   })
 .run();
 // ]]>
