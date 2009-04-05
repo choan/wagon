@@ -195,7 +195,7 @@ var Wagon = function() {
    */  
   numberFormat = function(num) {
     var dSym, mSym, r, s, parts, re, i;
-    dSym = getTranslation('$number.decimal') || '.',
+    dSym = getTranslation('$number.decimal') || '.';
     mSym = getTranslation('$number.milliard') || ',';
     parts = ('' + num).split('.');
     if (mSym) {
