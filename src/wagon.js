@@ -177,8 +177,8 @@ var Wagon = function() {
       if (name in data) {
         found = true;
         value = data[name];
-        if (prefix in handlers) value = handlers[prefix](value);
         if (transform) value = transform(name, value);
+        if (prefix in handlers) value = handlers[prefix](value);
       }
       part = s.substring(0, re.lastIndex);
       if (found) part = part.replace(search, value);
@@ -229,7 +229,7 @@ var Wagon = function() {
   escapeHtml = function(s) {
     return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   },
-  pluralHandler = function(lang, m) {
+  handlePlural = function(lang, m) {
     pluralIndexHandlers[lang] = m;
     return wagon;
   };
@@ -309,7 +309,7 @@ var Wagon = function() {
      * @param {String} language
      * @param {Function} handler A function which gets a number passed and returns a index to be used from the translation object
      */  
-    pluralHandler : pluralHandler,
+    handlePlural : handlePlural,
     /**
      * Wagon library version number
      * @property {String}
