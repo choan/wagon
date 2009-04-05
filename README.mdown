@@ -1,58 +1,14 @@
 # Wagon
 
-Handles internationalization in your JavaScript applications.
+Handles localization in JavaScript applications.
+
+## Status
+
+This library is still not production ready.
 
 ## Usage
 
-Invoke the `Wagon` function to get and object able to set and get translations.
-
-    var i18n = Wagon();
-
-    // `set` using `source` string and `translation` string
-    i18n.set('Hello', 'Hola');
-    // get translation
-    i18n.t('Hello'); // 'Hola'
-    
-    // `set` using a hash-like object containing translations
-    i18n.set({
-      'Hello': 'Hola',
-      'Bye': 'Adiós',
-      'Foo': 'Wadus'
-    });
-    i18n.t('Hello'); // 'Hola'
-    i18n.t('Bye'); // 'Adiós'
-    i18n.t('Foo'); // 'Wadus'
-    
-    // interpolation of values
-    i18n.set('Hello #{username}', 'Hola, #{username}');
-    i18n.t('Hello #{username}', { username: 'Choan' }); // 'Hola, Choan'
-    
-    // pluralization
-    i18n.set({
-      comments: {
-        0: 'Sin comentarios',
-        1: 'Un triste comentario',
-        n: '#{n} comentarios'
-      }
-    });
-    i18n.pl('comments', 0); // 'Sin comentarios'
-    i18n.pl('comments', 1); // 'Un triste comentario'
-    i18n.pl('comments', 9); // '9 comentarios'
-    
-    // multiple languages: use an additional argument on `set`
-    i18n
-      .set('mirror', 'espejo', 'es')
-      .set('mirror', 'mirallo', 'an');
-    // set language for getting translations by using... `use`
-    i18n.use('es').t('mirror'); // 'espejo'
-    i18n.use('an').t('mirror'); // 'mirallo'
-    
-    // namespaces require another additional argument
-    i18n
-      .set('please', 'por favor', 'es', 'polite')
-      .set('please', '¡pero ya!', 'es', 'rude');
-    i18n.use('es', 'polite').t('please'); // 'por favor'
-    i18n.use('es', 'rude').t('please'); // '¡pero ya!'
+API is still not frozen, so better no documentation than unusable documentation, isn't it?
 
 More documentation coming soon.
 

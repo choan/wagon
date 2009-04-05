@@ -1,3 +1,9 @@
+== 0.0.3 2009-04-05
+
+* Reworked plural API
+* Added numberFormat
+* Added documentation comments to the source code
+
 == 0.0.2 2009-04-01
 
 * Added custom callbacks for placeholders

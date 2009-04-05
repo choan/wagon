@@ -14,7 +14,7 @@ $:.unshift File.dirname(__FILE__) + "/lib"
 require "rake/file_concat"
 
 
-APP_VERSION  = '0.0.1'
+APP_VERSION  = '0.0.3'
 APP_NAME     = 'wagon'
 RUBYFORGE_PROJECT = APP_NAME
 APP_FILE_NAME= "#{APP_NAME}.js"
