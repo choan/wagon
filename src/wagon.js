@@ -1,4 +1,5 @@
 /**
+ * Returns an object able to manage localization needs  
  * @function
  * @returns {wagon}
  */  
@@ -39,6 +40,11 @@ var Wagon = function() {
    * @private
    */  
   handlers = {},
+  /**
+   * A hash containing plural handlers for each language
+   * @private
+   */  
+  pluralIndexHandlers = {},
   /**
    * Initializes data fields
    * @private
@@ -136,10 +142,21 @@ var Wagon = function() {
    * @private
    */
   plural = function(singular, plural, n, o, acceptHtml, transform) {
-    var getIndex, index, translation, source, defIndex;
-    defIndex = defaultPluralIndex(n);
+    var getIndex, index, translation, source, defIndex, to;
+    defIndex = n == 1 ? 0 : 1;
     source = defIndex == 1 && plural ? plural : singular;
-    translation = getTranslation(source) || source;
+    // try to find translation object (first using singular key, then plural key)
+    to = getTranslation(singular) || getTranslation(plural);
+    if (to && typeof to == 'object') {
+      index = (currentLang in pluralIndexHandlers) ? pluralIndexHandlers[currentLang](n) : defIndex;
+      if (index in to) {
+        translation = to[index];
+      }
+    }
+    else {
+      translation = getTranslation(source);
+    }
+    if (!translation) translation = source;
     transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
     acceptHtml = arguments.length >= 5 && typeof acceptHtml == 'boolean' && acceptHtml;
     o = o || {};
@@ -176,7 +193,7 @@ var Wagon = function() {
    * Formats a number according to the current language
    * @private
    */  
-  number_format = function(num) {
+  numberFormat = function(num) {
     var dSym, mSym, r, s, parts, re, i;
     dSym = getTranslation('$number.decimal') || '.',
     mSym = getTranslation('$number.milliard') || ',';
@@ -211,8 +228,9 @@ var Wagon = function() {
   escapeHtml = function(s) {
     return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   },
-  defaultPluralIndex = function(n) {
-    return n == 1 ? 0 : 1;
+  pluralHandler = function(lang, m) {
+    pluralIndexHandlers[lang] = m;
+    return wagon;
   };
 
   // set up
@@ -242,12 +260,23 @@ var Wagon = function() {
      * Retrieves a translation and interpolates properties from the given object
      * @function
      * @param {String} source Source string to be translated
-     * @param {Object} data Data object to be interpolated
+     * @param {Object} [data] Data object to be interpolated
      * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
      * @param {Function} [transform=null] Transformation function, receives the name and the value of the property to be interpolated as arguments, returns the final value to be interpolated
      * @returns {String} Translated string with interpolated data
      */ 
     t: translate,
+    /**
+     * Retrieves a singular/plural translation and interpolates properties from the given object
+     * @function
+     * @param {String} singular Singular form
+     * @param {String} plural Plural form
+     * @param {Number} n Number used for translation selection
+     * @param {Object} [data] Data object to be interpolated
+     * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
+     * @param {Function} [transform=null] Transformation function
+     * @returns {String} Translated string (if found) or original singular/plural string with interpolated data
+     */  
     pl: plural,
     /**
      * Establish the language and namespace to be used from now on
@@ -271,7 +300,14 @@ var Wagon = function() {
      * @param {Number}
      * @returns {String} The formatted number
      */   
-    number_format: number_format,
+    numberFormat: numberFormat,
+    /**
+     * Sets a plural handler for the given language
+     * @function
+     * @param {String} language
+     * @param {Function} handler A function which gets a number passed and returns a index to be used from the translation object
+     */  
+    pluralHandler : pluralHandler,
     /**
      * Wagon library version number
      * @property {String}
