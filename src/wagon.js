@@ -135,21 +135,15 @@ var Wagon = function() {
    * Selects translations based on a numeric argument, then interpolates data
    * @private
    */
-  plural = function(source, n, o, acceptHtml, transform) {
-    var translation = getTranslation(source);
+  plural = function(singular, plural, n, o, acceptHtml, transform) {
+    var getIndex, index, translation, source, defIndex;
+    defIndex = defaultPluralIndex(n);
+    source = defIndex == 1 && plural ? plural : singular;
+    translation = getTranslation(source) || source;
     transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
-    acceptHtml = arguments.length >= 4 && typeof acceptHtml == 'boolean' && acceptHtml;
+    acceptHtml = arguments.length >= 5 && typeof acceptHtml == 'boolean' && acceptHtml;
     o = o || {};
     o['n'] = n;
-    if (translation && typeof translation == 'object') {
-      if (n in translation) {
-        translation = translation[n];
-      }
-      else {
-        translation = translation['n'];
-      }
-    }
-    else if (translation === null) translation = source;
     if (!acceptHtml) translation = escapeHtml(translation);
     return interpolate(translation, o, transform);
   },
@@ -216,6 +210,9 @@ var Wagon = function() {
    */  
   escapeHtml = function(s) {
     return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+  defaultPluralIndex = function(n) {
+    return n == 1 ? 0 : 1;
   };
 
   // set up

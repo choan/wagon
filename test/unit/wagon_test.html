@@ -75,18 +75,26 @@ SugarTest('Wagon')
     // debugger;
     this.assertEqual('tralari !ph choan @asco, hey', t('tralari !ph #{nombre} @asco, hey', { nombre: 'choan' }));
   })
-  .it('handles plurals', function(data) {
-    i18n.set('hey', {
-        0: 'Nada de nada',
-        1: 'Un poco, pero solo uno',
-        n: '!{n} estropercios'
-    });
-    this.assertEqual('Nada de nada', i18n.pl('hey', 0));
-    this.assertEqual('Un poco, pero solo uno', i18n.pl('hey', 1));
-    this.assertEqual('3 estropercios', i18n.pl('hey', 3));
-  })
   .it('handles untranslated plurals', function(data) {
-    this.assertEqual('Untranslated 3 plural', pl('Untranslated #{n} plural', 3));
+    this.assertEqual('0 files deleted', i18n.pl('#{n} file deleted', '#{n} files deleted', 0));
+    this.assertEqual('1 file deleted', i18n.pl('#{n} file deleted', '#{n} files deleted', 1));
+  })
+  .it('handles plurals as strings', function(data) {
+    i18n
+      .use('es')
+      .set('#{n} file deleted', '#{n} fichero borrado')
+      .set('#{n} files deleted', '#{n} ficheros borrados');
+    this.assertEqual('0 ficheros borrados', pl('#{n} file deleted', '#{n} files deleted', 0));
+    this.assertEqual('1 fichero borrado', pl('#{n} file deleted', '#{n} files deleted', 1));
+  })
+  .it('handles plurals as translation objects', function(data) {
+    // debugger;
+    i18n.set('#{n} file deleted', {
+        0: '#{n} fichero borrado',
+        1: '#{n} ficheros borrados'
+    }, 'es').use('es');
+    this.assertEqual('0 ficheros borrados', i18n.pl('#{n} file deleted', '#{n} files deleted', 0));
+    this.assertEqual('1 fichero borrado', i18n.pl('#{n} file deleted', '#{n} files deleted', 1));
   })
   .it('can load multiple translations on one call', function(data) {
     i18n.set({
