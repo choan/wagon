@@ -1,15 +1,25 @@
 /**
- * Returns an object able to manage localization needs  
- * @function
- * @returns {wagon}
+ * Wagon - Manage localization
+ * @project Wagon
+ * @author Choan Gálvez
+ * @version <%= APP_VERSION %>
+ * @description The Wagon library implements methods for setting and retrieving string
+ *   translations with interpolated values and formatting numbers according to a locale.
+ */ 
+
+ /** 
+ * Main class
+ * @class
+ * @constructor
  */  
 var Wagon = function() {
+  if (!(this instanceof Wagon)) return new Wagon();
   /**
-   * The object returned by the Wagon function to handle all our localization needs
+   * The object returned
    * @name wagon
-   * @namespace
+   * @private
    */
-  var wagon,
+  var wagon = this,
   /**
    * Translations store
    * @private
@@ -116,11 +126,18 @@ var Wagon = function() {
     }
     return null;
   },
-  /**
-   * Translates a string interpolating data from a hash-like argument
-   * @private
-   */
-  translate = function(source, o, acceptHtml, transform) {
+ /**
+  * Retrieves a translation and interpolates properties from the given object
+  * @function
+  * @name t
+  * @memberOf Wagon.prototype
+  * @param {String} source Source string to be translated
+  * @param {Object} [data] Data object to be interpolated
+  * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
+  * @param {Function} [transform=null] Transformation function, receives the name and the value of the property to be interpolated as arguments, returns the final value to be interpolated
+  * @returns {String} Translated string with interpolated data
+  */ 
+  translate = wagon.t = function(source, o, acceptHtml, transform) {
     var translation = getTranslation(source) || source;
     transform = typeof arguments[arguments.length - 1] == 'function' ? arguments[arguments.length - 1] : null;
     acceptHtml = arguments.length >= 3 && typeof acceptHtml == 'boolean' && acceptHtml;
@@ -129,19 +146,33 @@ var Wagon = function() {
     return translation;
   },
   /**
-   * Sets language and namespace to use both in setting and retrieving translations
-   * @private
-   */
-  use = function(lang, ns) {
+   * Establish the language and namespace to be used from now on
+   * @function
+   * @name use
+   * @memberOf Wagon.prototype
+   * @param {String} language
+   * @param {String} [namespace=the current namespace]
+   * @returns {wagon}
+   */  
+  use = wagon.use = function(lang, ns) {
     currentLang = lang;
     if (ns !== undefined) currentNs = ns;
     return wagon;
   },
   /**
-   * Selects translations based on a numeric argument, then interpolates data
-   * @private
-   */
-  plural = function(singular, plural, n, o, acceptHtml, transform) {
+  * Retrieves a singular/plural translation and interpolates properties from the given object
+  * @function
+  * @name pl
+  * @memberOf Wagon.prototype
+  * @param {String} singular Singular form
+  * @param {String} plural Plural form
+  * @param {Number} n Number used for translation selection
+  * @param {Object} [data] Data object to be interpolated
+  * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
+  * @param {Function} [transform=null] Transformation function
+  * @returns {String} Translated string (if found) or original singular/plural string with interpolated data
+  */  
+  plural = wagon.pl = function(singular, plural, n, o, acceptHtml, transform) {
     var getIndex, index, translation, source, defIndex, to;
     defIndex = n == 1 ? 0 : 1;
     source = defIndex == 1 && plural ? plural : singular;
@@ -190,10 +221,15 @@ var Wagon = function() {
     return r;
   },
   /**
-   * Formats a number according to the current language
-   * @private
-   */  
-  numberFormat = function(num, decs) {
+   * Formats a number according to the current locale
+   * @function
+   * @name number
+   * @memberOf Wagon.prototype
+   * @param {Number} number The number to be formatted
+   * @param {Number} decimals Decimal places to be used
+   * @returns {String} The formatted number
+   */   
+  numberFormat = wagon.number = function(num, decs) {
     var dSym, mSym, r, s, parts, re, i;
     dSym = getTranslation('$number.decimal') || '.';
     mSym = getTranslation('$number.milliard') || ',';
@@ -214,11 +250,16 @@ var Wagon = function() {
     }
     return parts.join(dSym);
   },
-  /**
-   * Sets a placeholder callback for the given prefix
-   * @private
-   */ 
-  handlePlaceholder = function(prefix, handler) {
+ /**
+  * Sets a callback for transforming placeholders based on its prefix
+  * @function
+  * @name handlePlaceholder
+  * @memberOf Wagon.prototype
+  * @param {String} prefix One of #, %, @, !
+  * @param {Function} handler Handler function, gets the value as argument, returns the value to be inserted
+  * @returns {wagon}
+  */  
+  handlePlaceholder = wagon.handlePlaceholder = function(prefix, handler) {
     handlers[prefix] = handler;
     return wagon;
   },
@@ -229,7 +270,15 @@ var Wagon = function() {
   escapeHtml = function(s) {
     return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   },
-  handlePlural = function(lang, m) {
+  /**
+   * Sets a plural handler for the given language
+   * @function
+   * @name handlePlural
+   * @memberOf Wagon.prototype
+   * @param {String} language
+   * @param {Function} handler A function which gets a number passed and returns a index to be used from the translation object
+   */  
+  handlePlural = wagon.handlePlural = function(lang, m) {
     pluralIndexHandlers[lang] = m;
     return wagon;
   };
@@ -237,83 +286,32 @@ var Wagon = function() {
   // set up
   initialize();
 
-  // return object with privileged methods
-  return wagon = 
-    /**
-     * @scope wagon.prototype
-     */  
-    {
-    /**
-     * Sets a translation
-     * @param {String} source
-     * @param {String} translation
-     * @param {String} [lang=current language]
-     * @param {String} [namespace=current namespace]
-     * @returns {wagon}
-     */  
-    set: function(source, translation, lang, ns) {
-      if (typeof source === 'object')
-        return setTranslations(source, translation, ns);
-      else
-        return setTranslation(source, translation, lang, ns);
-    },
-    /**
-     * Retrieves a translation and interpolates properties from the given object
-     * @function
-     * @param {String} source Source string to be translated
-     * @param {Object} [data] Data object to be interpolated
-     * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
-     * @param {Function} [transform=null] Transformation function, receives the name and the value of the property to be interpolated as arguments, returns the final value to be interpolated
-     * @returns {String} Translated string with interpolated data
-     */ 
-    t: translate,
-    /**
-     * Retrieves a singular/plural translation and interpolates properties from the given object
-     * @function
-     * @param {String} singular Singular form
-     * @param {String} plural Plural form
-     * @param {Number} n Number used for translation selection
-     * @param {Object} [data] Data object to be interpolated
-     * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
-     * @param {Function} [transform=null] Transformation function
-     * @returns {String} Translated string (if found) or original singular/plural string with interpolated data
-     */  
-    pl: plural,
-    /**
-     * Establish the language and namespace to be used from now on
-     * @function
-     * @param {String} language
-     * @param {String} [namespace=the current namespace]
-     * @returns {wagon}
-     */  
-    use: use,
-    /**
-     * Sets a callback for transforming placeholders based on its prefix
-     * @function
-     * @param {String} prefix One of #, %, @, !
-     * @param {Function} handler Handler function, gets the value as argument, returns the value to be inserted
-     * @returns {wagon}
-     */  
-    handlePlaceholder: handlePlaceholder,
-    /**
-     * Formats a number according to the current locale
-     * @function
-     * @param {Number} number The number to be formatted
-     * @param {Number} decimals Decimal places to be used
-     * @returns {String} The formatted number
-     */   
-    numberFormat: numberFormat,
-    /**
-     * Sets a plural handler for the given language
-     * @function
-     * @param {String} language
-     * @param {Function} handler A function which gets a number passed and returns a index to be used from the translation object
-     */  
-    handlePlural : handlePlural,
-    /**
-     * Wagon library version number
-     * @property {String}
-     */  
-    version: '<%= APP_VERSION %>'
+  /**
+   * Sets a translation
+   * @name set
+   * @function
+   * @memberOf Wagon.prototype
+   * @param {String} source
+   * @param {String} translation
+   * @param {String} [lang=current language]
+   * @param {String} [namespace=current namespace]
+   * @returns {wagon}
+   */  
+  wagon.set = function(source, translation, lang, ns) {
+    if (typeof source === 'object')
+      return setTranslations(source, translation, ns);
+    else
+      return setTranslation(source, translation, lang, ns);
   };
+
+  /**
+   * Wagon library version number
+   * @name version
+   * @memberOf Wagon.prototype
+   * @type {String}
+   */  
+  wagon.version = '<%= APP_VERSION %>';
+  
+  // return object with privileged methods
+  return wagon;
 };

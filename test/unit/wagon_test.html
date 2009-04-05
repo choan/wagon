@@ -37,7 +37,7 @@ SugarTest('Wagon')
     i18n = Wagon();
     t = i18n.t;
     pl = i18n.pl;
-    num = i18n.numberFormat;
+    num = i18n.number;
   })
   .it('allows setting and retrieving translations', function(data) {
     i18n.use('es').set('source', 'fuente');
@@ -98,7 +98,7 @@ SugarTest('Wagon')
   })
   .it('handles plurals specific to idioms (polish, you know)', function(data) {
     i18n
-      .pluralHandler('pl', function(n) {
+      .handlePlural('pl', function(n) {
         if (n == 1) return 0;
         var m = n % 10;
         if (m >= 2 && m <= 4) return 1;
