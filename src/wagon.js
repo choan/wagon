@@ -1,34 +1,47 @@
+/**
+ * @function
+ * @returns {wagon}
+ */  
 var Wagon = function() {
   /**
-   * The object that will be returned
+   * The object returned by the Wagon function to handle all our localization needs
+   * @name wagon
+   * @namespace
    */
   var wagon,
   /**
    * Translations store
+   * @private
    */
   strings,
   /**
    * Language in use
+   * @private
    */
   currentLang,
   /**
    * Namespace in use
+   * @private
    */
   currentNs,
   /**
    * List of prefixes
+   * @private
    */  
   prefixes = '#!@%',
   /**
    * Regexp to handle interpolation
+   * @private
    */
   re = new RegExp('([' + prefixes + '])\{([a-z0-9_]+)\}', 'ig'),
   /**
    * A hash containing handlers for each prefix
+   * @private
    */  
   handlers = {},
   /**
    * Initializes data fields
+   * @private
    */
   initialize = function() {
     var i;
@@ -38,6 +51,7 @@ var Wagon = function() {
   },
   /**
    * Adds a translation to the translations storage
+   * @private
    */
   setTranslation = function(source, translation, lang, ns) {
     lang = lang || currentLang;
@@ -49,6 +63,7 @@ var Wagon = function() {
   },
   /**
    * Adds multiple translations to the translation storage
+   * @private
    */
   setTranslations = function(o, lang, ns) {
     if ('meta' in o && 'translations' in o) {
@@ -63,6 +78,7 @@ var Wagon = function() {
   },
   /**
    * Retrieves a translation from the translation storage
+   * @private
    */
   getTranslation = function(source, lang, ns) {
     var o, path, i, part;
@@ -71,7 +87,7 @@ var Wagon = function() {
     if (lang in strings && ns in strings[lang]) {
       o = strings[lang][ns];
       // handle nested objects
-      if (/^[a-z0-9_]+(\.[a-z0-9_]+)+$/.test(source))
+      if (/^[$a-z0-9_]+(\.[$a-z0-9_]+)+$/.test(source))
         path = source.split('.');
       else
         path = [source];
@@ -96,6 +112,7 @@ var Wagon = function() {
   },
   /**
    * Translates a string interpolating data from a hash-like argument
+   * @private
    */
   translate = function(source, o, acceptHtml, transform) {
     var translation = getTranslation(source) || source;
@@ -107,6 +124,7 @@ var Wagon = function() {
   },
   /**
    * Sets language and namespace to use both in setting and retrieving translations
+   * @private
    */
   use = function(lang, ns) {
     currentLang = lang;
@@ -115,6 +133,7 @@ var Wagon = function() {
   },
   /**
    * Selects translations based on a numeric argument, then interpolates data
+   * @private
    */
   plural = function(source, n, o, acceptHtml, transform) {
     var translation = getTranslation(source);
@@ -136,6 +155,7 @@ var Wagon = function() {
   },
   /**
    * Interpolates data on a template string
+   * @private
    */
   interpolate = function(template, data, transform) {
     var m, s = template, r = '', search, part, prefix, name, value, found;
@@ -159,12 +179,41 @@ var Wagon = function() {
     return r;
   },
   /**
+   * Formats a number according to the current language
+   * @private
+   */  
+  number_format = function(num) {
+    var dSym, mSym, r, s, parts, re, i;
+    dSym = getTranslation('$number.decimal') || '.',
+    mSym = getTranslation('$number.milliard') || ',';
+    parts = ('' + num).split('.');
+    if (mSym) {
+      r = '';
+      s = parts[0];
+      for (;;) {
+        if (s.search(/[\d]([\d]{3})$/) !== -1) {
+          r = mSym + s.slice(-3) + r;
+          s = s.slice(0, -3);
+        }
+        else break;
+      }
+      r = s + r;
+      parts[0] = r;
+    }
+    return parts.join(dSym);
+  },
+  /**
    * Sets a placeholder callback for the given prefix
+   * @private
    */ 
   handlePlaceholder = function(prefix, handler) {
     handlers[prefix] = handler;
     return wagon;
   },
+  /**
+   * Returns the string with < and > symbols escaped for HTML
+   * @private
+   */  
   escapeHtml = function(s) {
     return ('' + s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   };
@@ -173,20 +222,63 @@ var Wagon = function() {
   initialize();
 
   // return object with privileged methods
-  return wagon = {
+  return wagon = 
+    /**
+     * @scope wagon.prototype
+     */  
+    {
+    /**
+     * Sets a translation
+     * @param {String} source
+     * @param {String} translation
+     * @param {String} [lang=current language]
+     * @param {String} [namespace=current namespace]
+     * @returns {wagon}
+     */  
     set: function(source, translation, lang, ns) {
       if (typeof source === 'object')
         return setTranslations(source, translation, ns);
       else
         return setTranslation(source, translation, lang, ns);
     },
-    get: getTranslation,
-    translate : translate,
+    /**
+     * Retrieves a translation and interpolates properties from the given object
+     * @function
+     * @param {String} source Source string to be translated
+     * @param {Object} data Data object to be interpolated
+     * @param {Boolean} [acceptHtml=false] Accept HTML coming from the translation
+     * @param {Function} [transform=null] Transformation function, receives the name and the value of the property to be interpolated as arguments, returns the final value to be interpolated
+     * @returns {String} Translated string with interpolated data
+     */ 
     t: translate,
     pl: plural,
-    plural: plural,
+    /**
+     * Establish the language and namespace to be used from now on
+     * @function
+     * @param {String} language
+     * @param {String} [namespace=the current namespace]
+     * @returns {wagon}
+     */  
     use: use,
+    /**
+     * Sets a callback for transforming placeholders based on its prefix
+     * @function
+     * @param {String} prefix One of #, %, @, !
+     * @param {Function} handler Handler function, gets the value as argument, returns the value to be inserted
+     * @returns {wagon}
+     */  
     handlePlaceholder: handlePlaceholder,
+    /**
+     * Formats a number according to the current locale
+     * @function
+     * @param {Number}
+     * @returns {String} The formatted number
+     */   
+    number_format: number_format,
+    /**
+     * Wagon library version number
+     * @property {String}
+     */  
     version: '<%= APP_VERSION %>'
   };
 };

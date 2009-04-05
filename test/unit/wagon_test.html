@@ -31,12 +31,13 @@
 
 <script type="text/javascript">
 // <![CDATA[
-var i18n, t, pl;
+var i18n, t, pl, num;
 SugarTest('Wagon')
   .before(function() {
     i18n = Wagon();
     t = i18n.t;
     pl = i18n.pl;
+    num = i18n.number_format;
   })
   .it('allows setting and retrieving translations', function(data) {
     i18n.use('es').set('source', 'fuente');
@@ -161,6 +162,24 @@ SugarTest('Wagon')
       return v;
     });
     this.assertEqual('choan is awesome', res);
+  })
+  .it('localizes numbers', function(data) {
+    this.assertEqual('1,000.23', num(1000.23));
+    this.assertEqual('888.2', num(888.2));
+    this.assertEqual('23,456,789.2', num(23456789.2));
+    this.assertEqual('-456,789.2', num(-456789.2));
+    this.assertEqual('456,789.2', num(456789.2));
+    i18n.set('$number.decimal', ',', 'es');
+    i18n.set('$number.milliard', ' ', 'es');
+    i18n.use('es');
+    this.assertEqual('456 789,2', num(456789.2));
+    i18n.set('$number', {
+      decimal: 'd',
+      milliard: '_'
+    }, 'kn');
+    i18n.use('kn');
+    this.assertEqual('456_789d2', num(456789.2));
+
   })
 .run();
 // ]]>
