@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <title><%= library %></title>
+  <link rel="stylesheet" href="assets/yaml_doc.css" type="text/css" media="screen" />
+</head>
+
+<body>
+
+<h1><%= library %> API Documentation</h1>
+
+<% if description %>
+  <%= markdown description %>
+<% end %>
+
+<% for klass in klasses %>
+
+  <div class="class">
+    <h2 id="<%= klass.id %>"><%= klass.name %></h2>
+    <% if klass.description %>
+      <%= markdown klass.description %>
+    <% end %>
+    
+    <div class="class-toc">
+      <dl>
+        <% methods = klass.klass_methods; if !methods.empty? %>
+        <dt>Class methods</dt>
+        <dd>
+          <ul>
+            <% for m in methods %>
+            <li><a href="#<%= m.id %>"<% if m.short %> title="<%= m.short %>"<% end %>><%= m.local_name %></a></li>
+            <% end %>
+          </ul>
+        </dd>
+        <% end %>
+        <% methods = klass.instance_methods; if !methods.empty? %>
+        <dt>Instance methods</dt>
+        <dd>
+          <ul>
+            <% for m in methods %>
+            <li><a href="#<%= m.id %>"<% if m.short %> title="<%= m.short %>"<% end %>><%= m.local_name %></a></li>
+            <% end %>
+          </ul>
+        </dd>
+        <% end %>
+      </dl>
+    </div>
+
+    <% properties = klass.klass_properties; if !properties.empty?  %>
+      <div class="class-properties">
+        <h3>Properties</h3>
+        <dl>
+        <% for p in properties %>
+          <dt><%= p.name %></dt>
+          <dd><% if p.type %><em><%= p.type %></em> <% end %><%= p.description %></dd>
+        <% end %>
+        </dl>
+      </div>
+    <% end %>
+    
+    <% if constructor = klass.constructor %>
+      <div class="class-constructor">
+        <h3>Constructor</h3>
+        <div class="function" id="<%= constructor.id %>">
+          <h4><%= constructor.name %></h4>
+          <%= theme_method constructor %>
+        </div>
+      </div>
+    <% end %>
+
+    <% methods = klass.klass_methods; if !methods.empty? %>
+      <div class="class-methods">
+        <h3>Class methods</h3>
+        <% for method in methods %>
+        <div id="<%= method.id %>" class="function">
+          <h4><%= method.name %></h4>
+          <%= theme_method method %>
+        </div>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <% methods = klass.instance_methods; if !methods.empty? %>
+      <div class="instance-methods">
+        <h3>Instance methods</h3>
+        <% for method in methods %>
+        <div id="<%= method.id %>" class="function">
+          <h4><%= method.name %></h4>
+          <%= theme_method method %>
+        </div>
+        <% end %>
+      </div>
+    <% end %>
+    
+    
+  </div>
+<% end %>
+
+  <div class="footer">
+    <%= markdown license %>
+  </div>
+
+</body>
+</html>

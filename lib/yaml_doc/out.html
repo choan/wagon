@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <title>Wagon</title>
+  <link rel="stylesheet" href="yamldoc.css" type="text/css" media="screen" />
+</head>
+
+<body>
+
+<h1>Wagon API Documentation</h1>
+
+
+  <p><strong>Wagon</strong> is a library to handle internationalization/localization of JavaScript applications.</p>
+
+<p>Features:</p>
+
+<ul>
+<li>Multiple styles of setting translations</li>
+<li>Multiple languages and namespaces</li>
+<li>Interpolation of data values</li>
+<li>Handling of plural forms</li>
+<li>Custom transformations</li>
+<li>Prefix based transformations</li>
+<li>No dependencies</li>
+</ul>
+
+
+
+
+
+
+  <div class="class">
+    <h2 id="wagon">Wagon</h2>
+    
+      <p>Class to handle localization. Internally all method calls are made through closures, so the instance methods can be safely aliased</p>
+
+    
+    
+    <div class="class-toc">
+      <dl>
+        
+        
+        <dt>Instance methods</dt>
+        <dd>
+          <ul>
+            
+            <li><a href="#wagon:handleplaceholder" title="Sets a callback for transforming placeholders based on its prefix">handlePlaceholder</a></li>
+            
+            <li><a href="#wagon:handleplural" title="">handlePlural</a></li>
+            
+            <li><a href="#wagon:number" title="Formats a number according to the current locale">number</a></li>
+            
+            <li><a href="#wagon:pl" title="Select a singular or plural translation based on a given number">pl</a></li>
+            
+            <li><a href="#wagon:set-1" title="Sets multiple translations coming from an object">set</a></li>
+            
+            <li><a href="#wagon:set" title="Sets a translation for a given string.">set</a></li>
+            
+            <li><a href="#wagon:set-2" title="Sets multiple translations coming from an object">set</a></li>
+            
+            <li><a href="#wagon:t" title="Retrieves a translation and interpolates properties from the given object">t</a></li>
+            
+            <li><a href="#wagon:use" title="">use</a></li>
+            
+          </ul>
+        </dd>
+        
+      </dl>
+    </div>
+
+    
+      <div class="class-properties">
+        <h3>Properties</h3>
+        <dl>
+        
+          <dt>version</dt>
+          <dd><em>String</em> The Wagon library version number</dd>
+        
+        </dl>
+      </div>
+    
+    
+    
+      <div class="class-constructor">
+        <h3>Constructor</h3>
+        <div class="function" id="wagon-1">
+          <h4>Wagon</h4>
+          <p>Creates a new Wagon instance (<code>new</code> keyword is not required)</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon</strong>()</code></pre><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div>
+        </div>
+      </div>
+    
+
+    
+    
+    
+      <div class="instance-methods">
+        <h3>Instance methods</h3>
+        
+        <div id="wagon:handleplaceholder" class="function">
+          <h4>Wagon#handlePlaceholder</h4>
+          <p>Sets a callback for transforming placeholders based on its prefix</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon#handlePlaceholder</strong>(prefix, handler)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>prefix</dt><dd><em>String</em>. One of #, %, @, !</dd><dt>handler</dt><dd><em>Function</em>. Handler function, gets the value as argument, returns the value to be inserted</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div><p>Placeholders can appear in both the source and the translated string. They consist of a prefix (any of <code>#</code>, <code>%</code>, <code>!</code> or <code>@</code>), followed by a left brackett (<code>{</code>), a property name and a right brackett (<code>}</code>).</p>
+
+<p>You can use <a href="#wagon#handlePlaceholder">Wagon#handlePlaceholder</a> to set a custom handler for any of these prefixes. This way you can use <code>@{something}</code> as a placeholder which will be, for example, emphasized:</p>
+
+<pre><code>someWagonInstance.handlePlaceholder('#', function(value) {
+  return '&lt;em&gt;' + value + '&lt;/em&gt;';
+});
+</code></pre>
+
+        </div>
+        
+        <div id="wagon:handleplural" class="function">
+          <h4>Wagon#handlePlural</h4>
+          <pre class="signature"><code><em>Wagon</em> <strong>Wagon#handlePlural</strong>(language, handler)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>language</dt><dd><em>String</em>. </dd><dt>handler</dt><dd><em>Function</em>. A function which gets a number passed and returns a index to be used from the translation object</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div><p>Sets a plural handler for the given language</p>
+
+        </div>
+        
+        <div id="wagon:number" class="function">
+          <h4>Wagon#number</h4>
+          <p>Formats a number according to the current locale</p>
+<pre class="signature"><code><em>String</em> <strong>Wagon#number</strong>(number, <em>decimalPlaces=null</em>)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>number</dt><dd><em>Number</em>. The number to be formatted</dd><dt>decimalPlaces</dt><dd><em>Number</em> (optional). Number of decimals after the decimal symbol</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>String</em> The formatted number.</p></div>
+        </div>
+        
+        <div id="wagon:pl" class="function">
+          <h4>Wagon#pl</h4>
+          <p>Select a singular or plural translation based on a given number</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon#pl</strong>(singular, plural, number, <em>data=empty object</em>, <em>acceptHtml=false</em>, <em>transform=null</em>)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>singular</dt><dd><em>String</em>. key for the singular translation</dd><dt>plural</dt><dd><em>String</em>. key for the plural translation</dd><dt>number</dt><dd><em>Number</em>. Number used for translation selection</dd><dt>data</dt><dd><em>Object</em> (optional). Data object to be interpolated</dd><dt>acceptHtml</dt><dd><em>Boolean</em> (optional). Accept HTML coming from the translated string</dd><dt>transform</dt><dd><em>Function</em> (optional). Transformation function</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div>
+        </div>
+        
+        <div id="wagon:set-1" class="function">
+          <h4>Wagon#set</h4>
+          <p>Sets multiple translations coming from an object</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon#set</strong>(data)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>data</dt><dd><em>Object</em>. An object containing properties named `meta` and `translations`</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div><p>The <code>meta</code> property in the <code>data</code> object may contain <code>language</code> and <code>namespace</code> properties
+to be used on setting values. If no present, current language and/or current namespace are
+used.</p>
+
+<p>The <code>locations</code> property in the <code>data</code> object declares keys and values to be used as keys
+and values in the translations.</p>
+
+        </div>
+        
+        <div id="wagon:set" class="function">
+          <h4>Wagon#set</h4>
+          <p>Sets a translation for a given string.</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon#set</strong>(source, translation)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>source</dt><dd><em>String</em>. Sets a translation for a given string</dd><dt>translation</dt><dd><em>String | Object</em>. String or object to be used as a translation (better if you use objects only for plurals ans date translations)</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div>
+        </div>
+        
+        <div id="wagon:set-2" class="function">
+          <h4>Wagon#set</h4>
+          <p>Sets multiple translations coming from an object</p>
+<pre class="signature"><code><em>Wagon</em> <strong>Wagon#set</strong>(translations, <em>locale=current locale</em>, <em>namespace=current namespace</em>)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>translations</dt><dd><em>Object</em>. An objetc containing key/value properties to be used as translations</dd><dt>locale</dt><dd><em>String</em> (optional). </dd><dt>namespace</dt><dd><em>String</em> (optional). </dd></dl></div><div class="returns"><h5>Returns</h5><p><em>Wagon</em> </p></div><p>Each key/value in the <code>translations</code> object is set as a source/translation.</p>
+
+        </div>
+        
+        <div id="wagon:t" class="function">
+          <h4>Wagon#t</h4>
+          <p>Retrieves a translation and interpolates properties from the given object</p>
+<pre class="signature"><code><em>String</em> <strong>Wagon#t</strong>(source, <em>data=empty object</em>, <em>acceptHtml=false</em>, <em>transform=null</em>)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>source</dt><dd><em>String</em>. The string to be translated</dd><dt>data</dt><dd><em>Object</em> (optional). Object with values to get interpolated</dd><dt>acceptHtml</dt><dd><em>Boolean</em> (optional). Accept HTML coming from the translated string</dd><dt>transform</dt><dd><em>Function</em> (optional). Transformation function</dd></dl></div><div class="returns"><h5>Returns</h5><p><em>String</em> </p></div><p>Search for a translation in the current locale and current namespace and returns the
+translation (or the source if a translation is not found) with interpolated data.</p>
+
+        </div>
+        
+        <div id="wagon:use" class="function">
+          <h4>Wagon#use</h4>
+          <pre class="signature"><code><em></em> <strong>Wagon#use</strong>(language, <em>namespace=current namespace</em>)</code></pre><div class="arguments"><h5>Arguments</h5><dl><dt>language</dt><dd><em>String</em>. </dd><dt>namespace</dt><dd><em>String</em> (optional). </dd></dl></div><p>Establish the language and namespace to be used from now on</p>
+
+        </div>
+        
+      </div>
+    
+    
+    
+  </div>
+
+
+  <div class="footer">
+    <p>Wagon is &copy; 2009 Choan Gálvez released under a MIT license.</p>
+
+  </div>
+
+</body>
+</html>

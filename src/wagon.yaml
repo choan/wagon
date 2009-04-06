@@ -1,0 +1,202 @@
+library: Wagon
+description: |
+  **Wagon** is a library to handle internationalization/localization of JavaScript applications.
+  
+  Features:
+    
+    * Multiple styles of setting translations
+    * Multiple languages and namespaces
+    * Interpolation of data values
+    * Handling of plural forms
+    * Custom transformations
+    * Prefix based transformations
+    * No dependencies
+  
+license: 'Wagon is &copy; 2009 Choan Gálvez released under a MIT license.'
+symbols:
+  - name: Wagon
+    is_class: true
+    description: 'Class to handle localization. Internally all method calls are made through closures, so the instance methods can be safely aliased'
+    properties:
+      - name: version
+        type: String
+        description: The Wagon library version number
+
+  - name: Wagon
+    is_function: true
+    is_constructor: true
+    short: Creates a new Wagon instance (`new` keyword is not required)
+    returns:
+      type: Wagon
+
+  - name: 'Wagon#t'
+    is_function: true
+    short: Retrieves a translation and interpolates properties from the given object
+    description: |
+      Search for a translation in the current locale and current namespace and returns the
+      translation (or the source if a translation is not found) with interpolated data.
+    params:
+      - name: source
+        is_optional: false
+        type: String
+        description: The string to be translated
+      - name: data
+        is_optional: true
+        type: Object
+        default: empty object
+        description: Object with values to get interpolated
+      - name: acceptHtml
+        is_optional: true
+        type: Boolean
+        default: 'false'
+        description: Accept HTML coming from the translated string
+      - name: transform
+        is_optional: true
+        type: Function
+        description: Transformation function
+        default: 'null'
+    returns:
+      type: String
+  
+  - name: 'Wagon#set'
+    is_function: true
+    short: Sets a translation for a given string.
+    params:
+      - name: source
+        type: String
+        description: Sets a translation for a given string
+      - name: translation
+        type: String | Object
+        description: String or object to be used as a translation (better if you use objects only for plurals ans date translations)
+    returns:
+      type: Wagon
+  
+  - name: 'Wagon#set'
+    is_function: true
+    short: Sets multiple translations coming from an object
+    description: |
+      The `meta` property in the `data` object may contain `language` and `namespace` properties
+      to be used on setting values. If no present, current language and/or current namespace are
+      used.
+      
+      The `locations` property in the `data` object declares keys and values to be used as keys
+      and values in the translations.
+    params:
+      - name: data
+        type: Object
+        description: An object containing properties named `meta` and `translations`
+    returns:
+      type: Wagon
+  
+  - name: 'Wagon#set'
+    is_function: true
+    short: Sets multiple translations coming from an object
+    description: |
+      Each key/value in the `translations` object is set as a source/translation.
+    params:
+      - name: translations
+        type: Object
+        description: An objetc containing key/value properties to be used as translations
+      - name: locale
+        type: String
+        is_optional: true
+        default: current locale
+      - name: namespace
+        type: String
+        is_optional: true
+        default: current namespace
+    returns:
+      type: Wagon
+        
+  - name: 'Wagon#pl'
+    is_function: true
+    short: Select a singular or plural translation based on a given number
+    params:
+      - name: singular
+        type: String
+        description: key for the singular translation
+      - name: plural
+        type: String
+        description: key for the plural translation
+      - name: number
+        type: Number
+        description: Number used for translation selection
+      - name: data
+        type: Object
+        is_optional: true
+        default: empty object
+        description: Data object to be interpolated
+      - name: acceptHtml
+        is_optional: true
+        type: Boolean
+        default: 'false'
+        description: Accept HTML coming from the translated string
+      - name: transform
+        is_optional: true
+        type: Function
+        description: Transformation function
+        default: 'null'
+    returns:
+      type: String
+  
+  - name: 'Wagon#number'
+    is_function: true
+    short: Formats a number according to the current locale
+    params:
+      - name: number
+        description: The number to be formatted
+        type: Number
+      - name: decimalPlaces
+        description: Number of decimals after the decimal symbol
+        type: Number
+        is_optional: true
+        default: 'null'
+    returns:
+      type: String
+      description: The formatted number.
+  
+  - name: 'Wagon#handlePlaceholder'
+    short: Sets a callback for transforming placeholders based on its prefix
+    is_function: true
+    description: |
+      Placeholders can appear in both the source and the translated string. They consist of a prefix (any of `#`, `%`, `!` or `@`), followed by a left brackett (`{`), a property name and a right brackett (`}`).
+      
+      You can use [Wagon#handlePlaceholder](#wagon#handlePlaceholder) to set a custom handler for any of these prefixes. This way you can use `@{something}` as a placeholder which will be, for example, emphasized:
+
+          someWagonInstance.handlePlaceholder('#', function(value) {
+            return '<em>' + value + '</em>';
+          });
+    params:
+      - name: prefix
+        type: String
+        description: 'One of #, %, @, !'
+      - name: handler
+        type: Function
+        description: 'Handler function, gets the value as argument, returns the value to be inserted'
+    returns:
+      type: Wagon
+    
+  
+  - name: 'Wagon#handlePlural'
+    description: Sets a plural handler for the given language
+    is_function: true
+    params:
+      - name: language
+        type: String
+      - name: handler
+        type: Function
+        description: A function which gets a number passed and returns a index to be used from the translation object
+    returns:
+      type: Wagon
+  
+  - name: 'Wagon#use'
+    description: Establish the language and namespace to be used from now on
+    is_function: true
+    params:
+      - name: language
+        type: String
+      - name: namespace
+        type: String
+        is_optional: true
+        default: current namespace
+  
